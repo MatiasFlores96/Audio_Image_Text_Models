@@ -4,13 +4,9 @@ format: html
 editor: visual
 ---
 
-## Quarto
+## TP FINAL 
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
-
-## Running Code
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+1 - SONIDO
 
 ```{r, message=FALSE, warning=FALSE}
 library(tuneR)
@@ -57,11 +53,260 @@ oscillo(instrumento, from = 0, to = 0.5)
 title("Zoom - Instrumento musical")
 
 # Zoom en el oscilograma - Sonido genérico
-oscillo(sonido_generico, from = 0, to = 0.6)
+oscillo(sonido_generico, from = 0, to = 0.1)
 title("Zoom - Sonido genérico")
 
 # Zoom en el oscilograma - Habla
-oscillo(habla, from = 0, to = 0.7)
+oscillo(habla, from = 0, to = 0.3)
 title("Zoom - Habla")
 
+```
+
+```{r}
+
+
+# Cargar los sonidos
+instrumento <- readWave("rock-drum-loop-85371.wav")
+sonido_generico <- readMP3("Red-winged Tinamou10.mp3")
+habla <- readMP3("afrikaans5.mp3")
+
+# Convertir a mono si es necesario
+convert_to_mono <- function(sound) {
+  if (sound@stereo) {
+    return(mono(sound, "left"))
+  } else {
+    return(sound)
+  }
+}
+
+instrumento <- convert_to_mono(instrumento)
+sonido_generico <- convert_to_mono(sonido_generico)
+habla <- convert_to_mono(habla)
+
+# Extraer una porción del audio para análisis (5 segundos)
+instrumento <- extractWave(instrumento, from = 1, to = 5, xunit = "time")
+sonido_generico <- extractWave(sonido_generico, from = 1, to = 5, xunit = "time")
+habla <- extractWave(habla, from = 1, to = 5, xunit = "time")
+
+# Dibujar periodogramas con spec
+par(mfrow = c(3, 1)) # Tres gráficos en una columna
+
+# Periodograma para el sonido del instrumento
+spec(instrumento, wl = 1024, main = "Espectro - Instrumento", flim = c(0, 5))
+axis(side = 2, las = 2)
+
+# Periodograma para el sonido genérico
+spec(sonido_generico, wl = 1024, main = "Espectro - Sonido Genérico", flim = c(0, 5))
+axis(side = 2, las = 2)
+
+# Periodograma para el sonido de habla
+spec(habla, wl = 1024, main = "Espectro - Habla", flim = c(0, 5))
+axis(side = 2, las = 2)
+
+```
+
+```{r}
+# Cargar los sonidos
+instrumento <- readWave("rock-drum-loop-85371.wav")
+sonido_generico <- readMP3("Red-winged Tinamou10.mp3")
+habla <- readMP3("afrikaans5.mp3")
+
+# Convertir a mono si es necesario
+convert_to_mono <- function(sound) {
+  if (sound@stereo) {
+    return(mono(sound, "left"))
+  } else {
+    return(sound)
+  }
+}
+
+instrumento <- convert_to_mono(instrumento)
+sonido_generico <- convert_to_mono(sonido_generico)
+habla <- convert_to_mono(habla)
+
+# Extraer una porción del audio para análisis (5 segundos)
+instrumento <- extractWave(instrumento, from = 1, to = 5, xunit = "time")
+sonido_generico <- extractWave(sonido_generico, from = 1, to = 5, xunit = "time")
+habla <- extractWave(habla, from = 1, to = 5, xunit = "time")
+
+# Mostrar espectrogramas
+par(mfrow = c(3, 1)) # Tres gráficos en una columna
+
+# Espectrograma para el sonido del instrumento
+spectro(instrumento, wl = 512, ovlp = 50, main = "Espectrograma - Instrumento")
+
+# Espectrograma para el sonido genérico
+spectro(sonido_generico, wl = 512, ovlp = 50, main = "Espectrograma - Sonido Genérico")
+
+# Espectrograma para el sonido de habla
+spectro(habla, wl = 512, ovlp = 50, main = "Espectrograma - Habla")
+```
+
+```{r}
+
+# Cargar un sonido (por ejemplo, el del instrumento)
+sonido <- readWave("rock-drum-loop-85371.wav")
+
+# Convertir a mono si es necesario
+if (sonido@stereo) {
+  sonido <- mono(sonido, "left") # Seleccionar canal izquierdo si es estéreo
+}
+
+# Filtrar el sonido con un filtro pasa-bajo
+frecuencia_corte_bajo <- 1000 # Frecuencia de corte para el filtro pasa-bajo (en Hz)
+sonidoPB <- ffilter(sonido, to = frecuencia_corte_bajo, output = "Wave")
+sonidoPB <- normalize(sonidoPB, unit = "16") # Normalizar el sonido
+
+# Filtrar el sonido con un filtro pasa-alto
+frecuencia_corte_alto <- 1000 # Frecuencia de corte para el filtro pasa-alto (en Hz)
+sonidoPA <- ffilter(sonido, from = frecuencia_corte_alto, output = "Wave")
+sonidoPA <- normalize(sonidoPA, unit = "16") # Normalizar el sonido
+
+# Mostrar espectrogramas
+par(mfrow = c(3, 1)) # Tres gráficos en una columna
+
+# Espectrograma del sonido original
+spectro(sonido, wl = 512, ovlp = 50, main = "Espectrograma - Sonido Original")
+
+# Espectrograma del sonido filtrado pasa-bajo
+spectro(sonidoPB, wl = 512, ovlp = 50, main = "Espectrograma - Filtro Pasa-Bajo")
+
+# Espectrograma del sonido filtrado pasa-alto
+spectro(sonidoPA, wl = 512, ovlp = 50, main = "Espectrograma - Filtro Pasa-Alto")
+
+```
+
+```{r}
+library(jpeg)
+
+# Leer la imagen
+image_path <- "chihuahua-990x660.jpg" 
+image <- readJPEG(image_path)
+dim(image) # Dimensiones de la imagen
+
+# Separar canales RGB
+matrizR <- image[,,1]
+matrizV <- image[,,2]
+matrizA <- image[,,3]
+
+# Crear un data.frame con los tres canales
+df <- data.frame(matrizR, matrizV, matrizA)
+
+# Aplicar PCA al data.frame
+pca <- prcomp(df, center = TRUE)
+
+# Reconstrucción de la imagen con 10 y 50 componentes principales
+reconstruir_imagen <- function(pca_obj, n_componentes, img_dim) {
+  # Reconstruir con los primeros 'n_componentes'
+  imagen_CP <- pca_obj$x[,1:n_componentes] %*% t(pca_obj$rotation[,1:n_componentes])
+  # Normalizar al rango [0, 1]
+  imagen_CPN <- (imagen_CP - min(imagen_CP)) / (max(imagen_CP) - min(imagen_CP))
+  # Reensamblar en formato imagen
+  array(imagen_CPN, dim = c(img_dim[1], img_dim[2], 3))
+}
+
+# Reconstruir con 10 componentes
+imagen_CP_10 <- reconstruir_imagen(pca, 10, dim(image))
+
+# Reconstruir con 50 componentes
+imagen_CP_50 <- reconstruir_imagen(pca, 50, dim(image))
+
+# Mostrar las imágenes originales y reconstruidas
+# Imagen original
+plot(1:2, 1:2, type = "n", xlab = "", ylab = "", main = "Original", axes = FALSE)
+rasterImage(image, 1, 1, 2, 2)
+
+# Imagen reconstruida con 10 componentes
+plot(1:2, 1:2, type = "n", xlab = "", ylab = "", main = "Reconstrucción con 10 componentes", axes = FALSE)
+rasterImage(imagen_CP_10, 1, 1, 2, 2)
+
+# Imagen reconstruida con 50 componentes
+plot(1:2, 1:2, type = "n", xlab = "", ylab = "", main = "Reconstrucción con 50 componentes", axes = FALSE)
+rasterImage(imagen_CP_50, 1, 1, 2, 2)
+
+# Guardar las imágenes reconstruidas
+writeJPEG(imagen_CP_10, "reconstructed_10.jpg", quality = 0.8)
+writeJPEG(imagen_CP_50, "reconstructed_50.jpg", quality = 0.8)
+
+# Comparar tamaños de archivo
+original_size <- file.info(image_path)$size
+size_10 <- file.info("reconstructed_10.jpg")$size
+size_50 <- file.info("reconstructed_50.jpg")$size
+
+cat("Peso de la imagen original:", original_size, "bytes\n")
+cat("Peso de la imagen reconstruida (10 componentes):", size_10, "bytes\n")
+cat("Peso de la imagen reconstruida (50 componentes):", size_50, "bytes\n")
+cat("Reducción de peso con 10 componentes:", 100 * (original_size - size_10) / original_size, "%\n")
+cat("Reducción de peso con 50 componentes:", 100 * (original_size - size_50) / original_size, "%\n")
+
+```
+
+3
+
+```{r}
+# Instalar y cargar las librerías necesarias
+if (!require("tm")) install.packages("tm")
+if (!require("wordcloud")) install.packages("wordcloud")
+if (!require("RColorBrewer")) install.packages("RColorBrewer")
+
+library(tm)
+library(wordcloud)
+library(RColorBrewer)
+
+# Parte A - Nube de Palabras
+# 1) Cargar el texto y separar los párrafos
+texto <- "
+El futuro tecnológico de las pantallas para gamers
+
+En el mundo del Gaming, la tecnología define cuál será la experiencia del jugador. Por un lado, está el avance de las consolas y, en el otro, los televisores con Inteligencia Artificial. Gracias a esta tecnología, el concepto de inmersión para el entretenimiento digital está cambiando al combinar tamaño, calidad de imagen y conexión inteligente.
+
+En América Latina, el avance tecnológico de los TVs impacta directamente en el concepto de entretenimiento en el hogar. Por ejemplo, según un informe interno de Samsung, los gamers prefieren modelos de 65” o más, que brindan una experiencia visual mucho más completa. Además, con tasas de actualización de 144Hz o 240Hz, para que los movimientos del juego sean fluidos y sin interrupciones, un factor crucial tanto para jugadores profesionales como amateurs. Modelos como el Samsung Neo QLED Gaming TV, por ejemplo, ofrecen esta combinación de calidad de imagen y alta frecuencia de actualización, aumentando el nivel de inmersión y maximizando el potencial competitivo de los usuarios.
+
+Acceso a videojuegos desde la nube
+
+La integración de los televisores con servicios de streaming de videojuegos está transformando la experiencia gamer, especialmente con el auge del cloud gaming. Esta tendencia permite a los jugadores disfrutar de títulos sin depender de consolas ni descargas, gracias a los modernos hubs de juego que ofrecen una experiencia “plug-and-play” ágil y cómoda.
+
+Al convertirse en el centro del hogar conectado, las pantallas Samsung responden a la creciente demanda de practicidad e innovación, reflejada en el notable aumento de usuarios de juegos en la nube.
+
+Inteligencia Artificial en el centro de todo
+
+La IA revoluciona la experiencia gamer al eliminar la necesidad de ajustes manuales y personalizar automáticamente parámetros como brillo, contraste y sonido según el género del videojuego. Esta tecnología lleva la inmersión a otro nivel, haciendo que cada partida sea emocionante y envolvente.
+
+Con la evolución del mercado y la creciente importancia del entretenimiento en el hogar, la televisión continúa siendo el centro de la diversión familiar e individual. La combinación de pantallas de alta tecnología y recursos como la IA y el cloud gaming consolidan a los televisores para videojuegos como el epicentro de la diversión familiar e individual y los convierten en el regalo ideal para un amante de los videojuegos, marcando el camino hacia un futuro de entretenimiento más envolvente y tecnológico.
+
+"
+
+# Dividir el texto en párrafos
+parrafos <- unlist(strsplit(texto, "\n"))
+
+# Eliminar líneas vacías
+parrafos <- parrafos[nchar(parrafos) > 0]
+
+# Crear un corpus con los párrafos
+corpus <- Corpus(VectorSource(parrafos))
+
+# Pasos de normalización:
+corpus <- tm_map(corpus, content_transformer(tolower))          # Convertir texto a minúsculas
+corpus <- tm_map(corpus, content_transformer(removePunctuation)) # Quitar puntuaciones
+corpus <- tm_map(corpus, content_transformer(removeNumbers))     # Eliminar números
+corpus <- tm_map(corpus, removeWords, stopwords("spanish"))     # Eliminar palabras vacías (stopwords)
+corpus <- tm_map(corpus, stripWhitespace)                      # Eliminar espacios extra
+
+# 3) Generar la nube de palabras
+wordcloud(corpus, max.words = 100, random.order = FALSE, colors = brewer.pal(8, "Dark2"))
+
+# 4) Crear la bolsa de palabras
+dtm <- DocumentTermMatrix(corpus)
+bag_of_words <- as.matrix(dtm)
+
+# Mostrar dimensiones de la bolsa de palabras
+cat("Dimensiones de la bolsa de palabras:\n")
+cat("Filas (párrafos):", nrow(bag_of_words), "\n")
+cat("Columnas (palabras únicas):", ncol(bag_of_words), "\n")
+
+
+```
+
+```{r}
+dim(bag_of_words)
 ```
