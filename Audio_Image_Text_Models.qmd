@@ -1,0 +1,67 @@
+---
+title: "Audio_Image_Text_Models"
+format: html
+editor: visual
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r, message=FALSE, warning=FALSE}
+library(tuneR)
+library(seewave)
+library(rstudioapi)
+```
+
+```{r, message=FALSE, warning=FALSE}
+setwd(dirname(getActiveDocumentContext()$path))
+```
+
+```{r}
+# Cargar sonidos
+instrumento <- readWave("rock-drum-loop-85371.wav")
+sonido_generico <- readMP3("Red-winged Tinamou10.mp3")
+habla <- readMP3("afrikaans5.mp3")
+
+```
+
+```{r}
+summary(instrumento)
+summary(sonido_generico)
+summary(habla)
+```
+
+```{r}
+# Oscilograma - Instrumento musical
+oscillo(instrumento)
+title("Oscilograma - Instrumento musical")
+
+# Oscilograma - Sonido genérico
+oscillo(sonido_generico)
+title("Oscilograma - Sonido genérico")
+
+# Oscilograma - Habla
+oscillo(habla)
+title("Oscilograma - Habla")
+```
+
+```{r}
+
+# Zoom en el oscilograma - Instrumento musical
+oscillo(instrumento, from = 0, to = 0.5)
+title("Zoom - Instrumento musical")
+
+# Zoom en el oscilograma - Sonido genérico
+oscillo(sonido_generico, from = 0, to = 0.6)
+title("Zoom - Sonido genérico")
+
+# Zoom en el oscilograma - Habla
+oscillo(habla, from = 0, to = 0.7)
+title("Zoom - Habla")
+
+```
